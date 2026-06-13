@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(& \".specify\\\\extensions\\\\git\\\\scripts\\\\powershell\\\\create-new-feature.ps1\" -Json -ShortName \"product-api-crud\" \"Product API CRUD microservice\")",
+      "PowerShell(& \".specify\\\\scripts\\\\powershell\\\\setup-plan.ps1\" -Json)",
+      "PowerShell(& \".specify\\\\scripts\\\\powershell\\\\setup-tasks.ps1\" -Json)",
+      "PowerShell(dotnet new sln -n Ecommerce)",
+      "PowerShell(dotnet sln add src/Product.Api/Product.Api.csproj src/Product.Application/Product.Application.csproj src/Product.Domain/Product.Domain.csproj src/Product.Infrastructure/Product.Infrastructure.csproj tests/Product.UnitTests/Product.UnitTests.csproj)",
+      "PowerShell(dotnet add src/Product.Api package Swashbuckle.AspNetCore)",
+      "PowerShell(dotnet add tests/Product.UnitTests package Microsoft.EntityFrameworkCore.InMemory)",
+      "PowerShell(dotnet add src/Product.Infrastructure package Microsoft.EntityFrameworkCore --version 10.0.9)",
+      "PowerShell(dotnet build Ecommerce.sln --configuration Debug 2>&1)",
+      "PowerShell(dotnet add src/Product.Infrastructure package Microsoft.EntityFrameworkCore.Relational --version 10.0.9)",
+      "PowerShell(Get-Process \"Docker Desktop\" -ErrorAction SilentlyContinue)",
+      "PowerShell(docker compose up -d 2>&1)",
+      "PowerShell(dotnet tool update --global dotnet-ef 2>&1)",
+      "PowerShell(dotnet ef migrations add InitialCreate --project src/Product.Infrastructure --startup-project src/Product.Api 2>&1)",
+      "PowerShell(dotnet add src/Product.Api package Microsoft.EntityFrameworkCore.Design --version 10.0.9 2>&1)",
+      "PowerShell(dotnet ef database update --project src/Product.Infrastructure --startup-project src/Product.Api 2>&1)",
+      "PowerShell(docker exec ecommerce-postgres psql -U postgres -d productdb -c \"\\\\dt\" 2>&1)",
+      "Skill(update-config)",
+      "Skill(update-config:*)",
+      "PowerShell(New-Item -ItemType Directory -Force \"C:\\\\MyWork\\\\Ecommerce\\\\tests\\\\Product.UnitTests\\\\Services\")",
+      "PowerShell($id = \"82c682de-6181-4b1a-94e9-1c3e510a352b\"; $list = Invoke-RestMethod -Uri \"http://localhost:5050/api/products?pageNumber=1&pageSize=20\"; Write-Host \"LIST 200: totalCount=$\\($list.totalCount\\) items=$\\($list.items.Count\\)\"; $single = Invoke-RestMethod -Uri \"http://localhost:5050/api/products/$id\"; Write-Host \"GET 200: id=$\\($single.id\\) name=$\\($single.name\\)\")",
+      "PowerShell($id = \"82c682de-6181-4b1a-94e9-1c3e510a352b\"; try { Invoke-RestMethod -Method PUT -Uri \"http://localhost:5050/api/products/$id\" -ContentType \"application/json\" -Body '{\"name\":\"Updated Product\",\"price\":19.99,\"sku\":\"TEST-001\",\"stockQuantity\":5,\"isActive\":true}'; Write-Host \"PUT 204: success\" } catch { Write-Host \"PUT error: $_\" }; $updated = Invoke-RestMethod -Uri \"http://localhost:5050/api/products/$id\"; Write-Host \"GET after PUT: name=$\\($updated.name\\) price=$\\($updated.price\\)\")",
+      "PowerShell($id = \"82c682de-6181-4b1a-94e9-1c3e510a352b\"; try { Invoke-RestMethod -Method DELETE -Uri \"http://localhost:5050/api/products/$id\"; Write-Host \"DELETE 204: success\" } catch { Write-Host \"DELETE error: $_\" }; try { Invoke-RestMethod -Uri \"http://localhost:5050/api/products/$id\"; Write-Host \"GET after DELETE: should not reach here\" } catch { Write-Host \"GET after DELETE 404: confirmed\" })",
+      "PowerShell(try { Invoke-RestMethod -Method POST -Uri \"http://localhost:5050/api/products\" -ContentType \"application/json\" -Body '{\"name\":\"Dupe\",\"price\":1.00,\"sku\":\"TEST-001\",\"stockQuantity\":0}' } catch { Write-Host \"Duplicate SKU $\\($_.Exception.Response.StatusCode.value__\\): confirmed 409\" }; try { Invoke-RestMethod -Method POST -Uri \"http://localhost:5050/api/products\" -ContentType \"application/json\" -Body '{\"name\":\"\",\"price\":-1,\"sku\":\"\"}' } catch { Write-Host \"Validation $\\($_.Exception.Response.StatusCode.value__\\): confirmed 400\" })",
+      "PowerShell($null = Invoke-RestMethod -Method POST -Uri \"http://localhost:5050/api/products\" -ContentType \"application/json\" -Body '{\"name\":\"Original\",\"price\":5.00,\"sku\":\"DUP-SKU-X\"}'; try { Invoke-RestMethod -Method POST -Uri \"http://localhost:5050/api/products\" -ContentType \"application/json\" -Body '{\"name\":\"Dupe\",\"price\":1.00,\"sku\":\"DUP-SKU-X\"}' } catch { Write-Host \"Duplicate SKU $\\($_.Exception.Response.StatusCode.value__\\): confirmed 409\" })",
+      "PowerShell(Get-Process -Name \"dotnet\" -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowTitle -eq \"\" } | Stop-Process -Force; Remove-Item api-smoke.log, api-smoke-err.log -ErrorAction SilentlyContinue; Write-Host \"API process stopped\")"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\ffaghirnavaz\\.claude"
+    ]
+  }
+}
