@@ -1,14 +1,44 @@
 services:
-  postgres:
-    image: postgres:16
-    container_name: ecommerce-postgres
-    environment:
-      POSTGRES_DB: productdb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+  product.api:
+    image: ${DOCKER_REGISTRY-}productapi
+    container_name: products.api
+    build:
+      context: .
+      dockerfile: src/Product.Api/Dockerfile
     ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-volumes:
-  pgdata:
+     - 5000:8000
+     - 5001:8001
+    environment:
+     - connectionStrings__ProductDb=Host=product.db;Port=5432;Database=${DB_DATABASE};Username=${DB_USERNAME};Password=${DB_PASSWORD}
+    depends_on:
+      product.db:
+       condition: service_healthy
+    restart: always
+    networks:
+      - default
+
+  product.db:
+   image: postgres:18-alpine
+   container_name: products.db
+   environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+   volumes:
+    - ./.containers/database:/var/lib/postgresql
+   ports:
+     - 5432:5432
+   healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d appdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+   networks:
+      - default
+
+
+networks:
+  default:
+      driver: bridge
